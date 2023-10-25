@@ -1,5 +1,5 @@
 import flet as ft
-from views.auth.auth import AuthView
+from api.auth import authUser
 
 
 class AdminView:
@@ -14,6 +14,27 @@ class AdminView:
 
     def route_change(self, route):
         self.page.views.clear()
+
+        self.loginTextField = ft.TextField(
+            label="Логин",
+            border_color=ft.colors.BLACK,
+            focused_border_color=ft.colors.BLACK,
+            focused_color=ft.colors.BLACK,
+            cursor_color=ft.colors.BLACK,
+            color=ft.colors.BLACK
+        )
+
+        self.passwordTextField = ft.TextField(
+            label="Пароль",
+            password=True,
+            can_reveal_password=True,
+            border_color=ft.colors.BLACK,
+            focused_border_color=ft.colors.BLACK,
+            focused_color=ft.colors.BLACK,
+            cursor_color=ft.colors.BLACK,
+            color=ft.colors.BLACK
+        )
+
         self.page.views.append(
             ft.View(
                 "/",
@@ -27,34 +48,18 @@ class AdminView:
                         ),
 
                         ft.Container(
-                            content=ft.TextField(
-                                label="Логин",
-                                border_color=ft.colors.BLACK,
-                                focused_border_color=ft.colors.BLACK,
-                                focused_color=ft.colors.BLACK,
-                                cursor_color=ft.colors.BLACK,
-                                color=ft.colors.BLACK
-                            ),
+                            content=self.loginTextField,
                             width=300,
                             padding=ft.padding.only(top=16)
                         ),
 
                         ft.Container(
-                            content=ft.TextField(
-                                label="Пароль",
-                                password=True,
-                                can_reveal_password=True,
-                                border_color=ft.colors.BLACK,
-                                focused_border_color=ft.colors.BLACK,
-                                focused_color=ft.colors.BLACK,
-                                cursor_color=ft.colors.BLACK,
-                                color=ft.colors.BLACK
-                            ),
+                            content=self.passwordTextField,
                             width=300,
                             padding=ft.padding.symmetric(vertical=16)
                         ),
                         ft.Container(
-                            content=ft.ElevatedButton("Войти", on_click=self.navigateToStore),
+                            content=ft.ElevatedButton("Войти", on_click=self.onClickAuthUser),
                             width=150,
                             height=40
                         )
@@ -80,8 +85,12 @@ class AdminView:
             )
         self.page.update()
 
-    def navigateToStore(self, id: int):
-        self.page.go(f"/store/{id}")
+    def onClickAuthUser(self, arg):
+        user = authUser(self.loginTextField.value, self.passwordTextField.value)
+        if user.status_code == 200:
+            print(user.text)
+        else:
+            print(user.status_code)
 
     def view_pop(self, pop):
         self.page.views.pop()
